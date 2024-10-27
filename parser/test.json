@@ -1,0 +1,1767 @@
+{
+	"azulejo":
+	{
+		"version": "1.0"
+	},
+	"payload":
+	{
+		"playground":
+		{
+			"name": "Throne and Liberty",
+			"version": "1.0",
+			"description": "NC Soft Presents"
+		},
+		"reference":
+		{
+			"systemResolution":
+			{
+				"width": 1920,
+				"height": 1080
+			},
+			"gameResolution":
+			{
+				"width": 2560,
+				"height": 1440
+			},
+			"viewportScale": 0.75,
+			"canvasPadding":
+			{
+				"left": 16,
+				"right": 16,
+				"top": 16,
+				"bottom": 16
+			},
+			"gridSize":
+			{
+				"width": 16,
+				"height": 16
+			},
+			"usingGrid": true,
+			"usingAutoAlign": true,
+			"magneticThreshold": 4,
+			"adjacencyThreshold": 2,
+			"ApplicationScale": 1,
+			"ConsoleApplicationScale": 5
+		},
+		"components": [
+			{
+				"key": 1,
+				"version": "1.0",
+				"description": "메인 메뉴",
+				"support":
+				{
+					"translation":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": false
+				}
+			},
+			{
+				"key": 3,
+				"version": "1.0",
+				"description": "채팅 토글 버튼",
+				"support":
+				{
+					"translation":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": false
+				}
+			},
+			{
+				"key": 130,
+				"version": "1.0",
+				"description": "PVP 메시지",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 103,
+				"version": "1.0",
+				"description": "파티 UI",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 102,
+				"version": "1.0",
+				"description": "PC 정보",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 159,
+				"version": "1.0",
+				"description": "버프/디버프 슬롯 패널",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 101,
+				"version": "1.0",
+				"description": "재화",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 140,
+				"version": "1.0",
+				"description": "타겟 그룹",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 141,
+				"version": "1.0",
+				"description": "타겟 그룹",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 106,
+				"version": "1.0",
+				"description": "보스 타겟",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 108,
+				"version": "1.0",
+				"description": "미니맵",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 113,
+				"version": "1.0",
+				"description": "알리미 뷰어",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 114,
+				"version": "1.0",
+				"description": "스텔라 비전(타겟 스캐닝)",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 116,
+				"version": "1.0",
+				"description": "획득 메시지",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 120,
+				"version": "1.0",
+				"description": "스킬 슬롯",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 119,
+				"version": "1.0",
+				"description": "고정 슬롯",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 165,
+				"version": "1.0",
+				"description": "아미토이 아이콘",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 155,
+				"version": "1.0",
+				"description": "아미토이 회복 스킬",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 150,
+				"version": "1.0",
+				"description": "무기 스왑 버튼",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 123,
+				"version": "1.0",
+				"description": "무기 장착/스텔라 섀도(컴뱃 어시스트)",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 153,
+				"version": "1.0",
+				"description": "스텔라붐",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 145,
+				"version": "1.0",
+				"description": "이벤트 타임라인",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 128,
+				"version": "1.0",
+				"description": "아미토이 대사",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 129,
+				"version": "1.0",
+				"description": "파티장 어시스트",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 126,
+				"version": "1.0",
+				"description": "반격",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 143,
+				"version": "1.0",
+				"description": "귀환 버튼",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 164,
+				"version": "1.0",
+				"description": "낚시 버튼",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 144,
+				"version": "1.0",
+				"description": "인벤토리 버튼",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 160,
+				"version": "1.0",
+				"description": "액션 모드",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 146,
+				"version": "1.0",
+				"description": "임시 보관함 버튼",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 147,
+				"version": "1.0",
+				"description": "현실 시간 표기",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 156,
+				"version": "1.0",
+				"description": "어비스 포인트",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 161,
+				"version": "1.0",
+				"description": "계약의 증표:차원",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 166,
+				"version": "1.0",
+				"description": "계약의 증표:차원",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 157,
+				"version": "1.0",
+				"description": "스킬 게이지 바",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 158,
+				"version": "1.0",
+				"description": "스태미너 게이지",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 148,
+				"version": "1.0",
+				"description": "시스템 메시지",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 149,
+				"version": "1.0",
+				"description": "시스템 풀 스크린 메시지",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			},
+			{
+				"key": 162,
+				"version": "1.0",
+				"description": "감정 표현",
+				"support":
+				{
+					"translation":
+					{
+						"x": true,
+						"y": true,
+						"z": false
+					},
+					"scaling":
+					{
+						"x": false,
+						"y": false,
+						"z": false
+					},
+					"zOrdering": false,
+					"linking": true
+				}
+			}
+		],
+		"transforms": [
+			{
+				"componentKey": 1,
+				"desiredSize":
+				{
+					"width": 54,
+					"height": 54
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -86,
+					"y": -94,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 3,
+				"desiredSize":
+				{
+					"width": 180,
+					"height": 32
+				},
+				"align": "LeftBottom",
+				"translate":
+				{
+					"x": 32,
+					"y": -42,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 130,
+				"desiredSize":
+				{
+					"width": 482,
+					"height": 115
+				},
+				"align": "CenterTop",
+				"translate":
+				{
+					"x": -245,
+					"y": 74.500007629394531,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 103,
+				"desiredSize":
+				{
+					"width": 367,
+					"height": 317
+				},
+				"align": "LeftCenter",
+				"translate":
+				{
+					"x": 32,
+					"y": -452.5440673828125,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 102,
+				"desiredSize":
+				{
+					"width": 388,
+					"height": 146
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -392.41180419921875,
+					"y": -374.588134765625,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 159,
+				"desiredSize":
+				{
+					"width": 254,
+					"height": 68
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -295.41180419921875,
+					"y": -274.588134765625,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 101,
+				"desiredSize":
+				{
+					"width": 776,
+					"height": 28
+				},
+				"align": "LeftTop",
+				"translate":
+				{
+					"x": 32,
+					"y": 0,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 140,
+				"desiredSize":
+				{
+					"width": 294,
+					"height": 150
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -4.4117431640625,
+					"y": -374.588134765625,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 141,
+				"desiredSize":
+				{
+					"width": 294,
+					"height": 150
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": 289.5882568359375,
+					"y": -374.588134765625,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 106,
+				"desiredSize":
+				{
+					"width": 560,
+					"height": 148
+				},
+				"align": "LeftTop",
+				"translate":
+				{
+					"x": 32,
+					"y": 52,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 108,
+				"desiredSize":
+				{
+					"width": 512,
+					"height": 250
+				},
+				"align": "RightTop",
+				"translate":
+				{
+					"x": -544.0001220703125,
+					"y": 32,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 113,
+				"desiredSize":
+				{
+					"width": 400,
+					"height": 600
+				},
+				"align": "RightTop",
+				"translate":
+				{
+					"x": -432,
+					"y": 290,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 114,
+				"desiredSize":
+				{
+					"width": 504,
+					"height": 268
+				},
+				"align": "LeftCenter",
+				"translate":
+				{
+					"x": 32,
+					"y": -25.64703369140625,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 116,
+				"desiredSize":
+				{
+					"width": 330,
+					"height": 350
+				},
+				"align": "CenterCenter",
+				"translate":
+				{
+					"x": -747.1617431640625,
+					"y": -453,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 120,
+				"desiredSize":
+				{
+					"width": 985,
+					"height": 156
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -492.5,
+					"y": -178,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 119,
+				"desiredSize":
+				{
+					"width": 266,
+					"height": 80
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": 204,
+					"y": -187,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 165,
+				"desiredSize":
+				{
+					"width": 64,
+					"height": 64
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": 136,
+					"y": -178,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 155,
+				"desiredSize":
+				{
+					"width": 110,
+					"height": 44
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": 16,
+					"y": -152,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 150,
+				"desiredSize":
+				{
+					"width": 70,
+					"height": 135
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -35,
+					"y": -156,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 123,
+				"desiredSize":
+				{
+					"width": 260,
+					"height": 80
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -460,
+					"y": -186,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 153,
+				"desiredSize":
+				{
+					"width": 110,
+					"height": 44
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -132,
+					"y": -152,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 145,
+				"desiredSize":
+				{
+					"width": 537,
+					"height": 260
+				},
+				"align": "CenterCenter",
+				"translate":
+				{
+					"x": 214.5882568359375,
+					"y": -367.2940673828125,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 128,
+				"desiredSize":
+				{
+					"width": 480,
+					"height": 150
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -511.9998779296875,
+					"y": -182,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 129,
+				"desiredSize":
+				{
+					"width": 181.60000610351562,
+					"height": 50
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -651.2666015625,
+					"y": -325,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 126,
+				"desiredSize":
+				{
+					"width": 65,
+					"height": 65
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -371,
+					"y": -257.5,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 143,
+				"desiredSize":
+				{
+					"width": 80,
+					"height": 64
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -273,
+					"y": -178,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 164,
+				"desiredSize":
+				{
+					"width": 64,
+					"height": 64
+				},
+				"align": "CenterBottom",
+				"translate":
+				{
+					"x": -200,
+					"y": -178,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 144,
+				"desiredSize":
+				{
+					"width": 54,
+					"height": 54
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -150,
+					"y": -94,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 160,
+				"desiredSize":
+				{
+					"width": 54,
+					"height": 54
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -214,
+					"y": -94,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 146,
+				"desiredSize":
+				{
+					"width": 54,
+					"height": 54
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -86,
+					"y": -158,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 147,
+				"desiredSize":
+				{
+					"width": 150,
+					"height": 16
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -182,
+					"y": -26,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 156,
+				"desiredSize":
+				{
+					"width": 110,
+					"height": 30
+				},
+				"align": "RightTop",
+				"translate":
+				{
+					"x": -200,
+					"y": 1,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 161,
+				"desiredSize":
+				{
+					"width": 110,
+					"height": 30
+				},
+				"align": "RightTop",
+				"translate":
+				{
+					"x": -318,
+					"y": 1,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 166,
+				"desiredSize":
+				{
+					"width": 110,
+					"height": 30
+				},
+				"align": "RightTop",
+				"translate":
+				{
+					"x": -436,
+					"y": 0,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 157,
+				"desiredSize":
+				{
+					"width": 230,
+					"height": 16
+				},
+				"align": "CenterCenter",
+				"translate":
+				{
+					"x": -119,
+					"y": 207,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 158,
+				"desiredSize":
+				{
+					"width": 20,
+					"height": 168
+				},
+				"align": "CenterCenter",
+				"translate":
+				{
+					"x": 227,
+					"y": -57,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 148,
+				"desiredSize":
+				{
+					"width": 400,
+					"height": 30
+				},
+				"align": "CenterTop",
+				"translate":
+				{
+					"x": -204,
+					"y": 204,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 149,
+				"desiredSize":
+				{
+					"width": 600,
+					"height": 30
+				},
+				"align": "CenterTop",
+				"translate":
+				{
+					"x": -305.25,
+					"y": 32,
+					"z": 0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			},
+			{
+				"componentKey": 162,
+				"desiredSize":
+				{
+					"width": 54,
+					"height": 54
+				},
+				"align": "RightBottom",
+				"translate":
+				{
+					"x": -278,
+					"y": -94,
+					"z": -0
+				},
+				"scale":
+				{
+					"x": 1,
+					"y": 1,
+					"z": 1
+				},
+				"zOrder": 0
+			}
+		]
+	}
+}

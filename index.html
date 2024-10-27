@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Throne & Liberty UI Visualizer</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    #canvas {
+      position: relative;
+      background-color: #313131;
+      overflow: hidden;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: top left;
+    }
+
+    .inner {
+      position: relative;
+      margin: 0 25px;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    .grid {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      right: 25px;
+      bottom: 25px;
+      z-index: 1;
+      pointer-events: none;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px dashed #fff;
+    }
+
+    .item {
+      position: absolute;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 50px;
+      color: white;
+      box-sizing: border-box;
+      z-index: 0;
+    }
+
+    #name {
+      text-shadow: 2px 2px 8px #000000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="canvas">
+    <div class="inner"></div>
+    <div class="grid"></div>
+  </div>
+
+  <script type="module">
+    import * as utils from "./utils.js";
+
+    let selectedFile;
+
+    const ACTUAL_SCALE = Object.entries(utils.scales).map(([k, v]) => {
+      if (k === 'TIER_1') {
+        return v;
+      }
+    });
+
+    let config = {
+      systemResolution: { width: 1920, height: 1080 },
+      gameResolution: { width: 2400, height: 1350 },
+      viewportScale: ACTUAL_SCALE,
+      canvasPadding: { left: 32, right: 32, top: 32, bottom: 32 },
+      gridSize: { width: 32, height: 32 },
+      usingGrid: true,
+      usingAutoAlign: true,
+      magneticThreshold: 4,
+      adjacencyThreshold: 2,
+      ApplicationScale: 2,
+      ConsoleApplicationScale: 5
+    };
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        const randomIndex = Math.floor(Math.random() * 16);
+        // Ensure the color is darker by limiting the range to 0-7
+        color += letters[randomIndex % 8];
+      }
+      return color;
+    }
+
+    // Calculate scale factor and apply to the canvas
+    function resizeCanvas() {
+      const canvas = document.getElementById('canvas');
+      const scale = Math.min(
+        window.innerWidth / config.systemResolution.width,
+        window.innerHeight / config.systemResolution.height
+      );
+      canvas.style.transform = `scale(${scale})`;
+    }
+
+    // Add event listener to handle window resize
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Example of adding items on the canvas
+    let addedButtons = new Set();
+
+    const removeAllItems = () => {
+      addedButtons.forEach(button => button.remove());
+      addedButtons.clear();
+    };
+
+    function addItem(transform) {
+
+      if (transform?.translate?.x === undefined) {
+        console.log(`fudido: ${transform?.componentKey}`);
+      }
+      const { componentKey, desiredSize, align, } = transform;
+      const { width, height } = desiredSize;
+      const { x, y } = transform.translate;
+
+      const item = document.createElement('div');
+      item.className = 'item';
+
+      // Position
+      Object.entries(utils.getCorrectedAlignment(align, transform.translate)).forEach(([key, val]) => {
+        item.style[key] = val;
+      });
+
+      item.style.width = `${width}px`;
+      item.style.height = `${height}px`;
+      item.style.backgroundColor = getRandomColor();
+      item.innerHTML = `<span>${utils.getNameById(componentKey)}</span>`;
+      item.style.fontSize = '0.7vw';
+      item.querySelector('span').style.opacity = '0.4';
+
+      item.style.transform = `scale(${config.viewportScale})`;
+
+      // Hover quando passa o mouse no bloco
+      item.addEventListener('mouseover', () => {
+        item.querySelector('span').style.opacity = '1';
+      });
+
+      item.addEventListener('mouseout', () => {
+        item.querySelector('span').style.opacity = '0.4';
+      });
+
+      item.style.display = 'flex';
+      item.style.justifyContent = 'center';
+      item.style.alignItems = 'center';
+
+
+      item.addEventListener('mouseover', () => {
+        item.style.border = '2px solid #FFD700';
+      });
+
+      item.addEventListener('click', () => {
+        item.style.visibility = 'hidden';
+      });
+
+      item.addEventListener('mouseout', () => {
+        item.style.border = 'none';
+      });
+
+      document.querySelector('.inner').appendChild(item);
+      addedButtons.add(item);
+    }
+
+    // Toggle grid visibility
+    const grid = document.querySelector('.grid');
+    const toggleButton = document.createElement('button');
+    toggleButton.innerText = 'Toggle Grid';
+    toggleButton.style.position = 'absolute';
+    toggleButton.style.top = '50px';
+    toggleButton.style.right = '50px';
+    toggleButton.style.zIndex = '2';
+
+    /*const tierSelect = document.createElement('select');
+    tierSelect.style.position = 'absolute';
+    tierSelect.style.top = '100px';
+    tierSelect.style.right = '50px';
+    tierSelect.style.zIndex = '2';
+
+    Object.keys(utils.scales).forEach(tier => {
+      const option = document.createElement('option');
+      option.value = tier;
+      option.text = tier;
+      tierSelect.appendChild(option);
+    });*/
+
+    /*tierSelect.addEventListener('change', (event) => {
+      const selectedTier = event.target.value;
+      const ACTUAL_SCALE = Object.entries(utils.scales).find(([k, v]) => k === selectedTier);
+      const [k, v] = ACTUAL_SCALE;
+
+      config.viewportScale = v;
+
+      removeAllItems();
+      createScreen(v);
+    });*/
+
+    // document.getElementById('canvas').appendChild(tierSelect);
+
+    toggleButton.addEventListener('click', () => {
+      grid.style.display = grid.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('canvas').appendChild(toggleButton);
+
+    // Load items based on JSON
+    const createScreen = (selectedViewportScale) => {
+      fetch('./parser/test.json')
+        .then(response => response.ok ? response.json() : Promise.reject('Failed to load'))
+        .then(jsonData => {
+          const { transforms, reference } = jsonData.payload;
+          config = { ...reference };
+
+          if (selectedViewportScale) {
+            config = {
+              ...reference,
+              viewportScale: selectedViewportScale
+            }
+          }
+
+          transforms.forEach(addItem);
+        })
+        .catch(console.error);
+    }
+    if (selectedFile){
+      createScreen();
+    }
+
+    const importButton = document.createElement('button');
+    importButton.innerText = 'Import T&L UI File (.azj)';
+    importButton.style.position = 'absolute';
+    importButton.style.top = '100px';
+    importButton.style.right = '50px';
+    importButton.style.zIndex = '2';
+
+    importButton.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.azj';
+      input.style.display = 'none';
+      input.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file && file.name.endsWith('.azj')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+        try {
+          const jsonData = JSON.parse(e.target.result);
+          const { transforms, reference } = jsonData.payload;
+          config = { ...reference };
+          
+          selectedFile = file.name;
+
+          updateFileNameDisplay()
+
+          alert(`File ${selectedFile} was imported`)
+
+          removeAllItems();
+          transforms.forEach(addItem);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        }
+          };
+          reader.readAsText(file);
+        } else {
+          alert('Please upload a valid .azj file.');
+        }
+      });
+      input.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const jsonData = JSON.parse(e.target.result);
+              const { transforms, reference } = jsonData.payload;
+              config = { ...reference };
+
+              removeAllItems();
+              transforms.forEach(addItem);
+            } catch (error) {
+              console.error('Error parsing JSON:', error);
+            }
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      input.click();
+    });
+
+    document.getElementById('canvas').appendChild(importButton);
+
+    const fileNameDisplay = document.createElement('div');
+    fileNameDisplay.style.position = 'absolute';
+    fileNameDisplay.style.top = '10px';
+    fileNameDisplay.style.left = '10px';
+    fileNameDisplay.style.color = 'white';
+    fileNameDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    fileNameDisplay.style.padding = '5px 10px';
+    fileNameDisplay.style.borderRadius = '5px';
+    fileNameDisplay.style.zIndex = '2';
+    fileNameDisplay.innerText = selectedFile ? `Loaded File: ${selectedFile}` : 'No file loaded';
+
+    document.getElementById('canvas').appendChild(fileNameDisplay);
+
+    const updateFileNameDisplay = () => {
+      fileNameDisplay.style.display = 'block';
+      fileNameDisplay.innerText = selectedFile ? `Loaded File: ${selectedFile}` : 'No file loaded';
+      setTimeout(() => {
+        fileNameDisplay.style.display = 'none';
+      }, 5000);
+    };
+  </script>
+
+</body>
+
+</html>
