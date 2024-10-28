@@ -9,9 +9,10 @@
     body {
       display: flex;
       justify-content: center;
+      align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #f0f0f0;
+      background-color: #202020;
     }
 
     #canvas {
@@ -20,7 +21,7 @@
       overflow: hidden;
       width: 1920px;
       height: 1080px;
-      transform-origin: top left;
+      transform-origin: center;
     }
 
     .inner {
@@ -54,6 +55,20 @@
 
     #name {
       text-shadow: 2px 2px 8px #000000;
+    }
+
+    .button {
+      outline: none;
+      border: 1px solid lightgreen;
+      padding: 8px;
+      background-color: transparent;
+      color: lightgreen;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -187,6 +202,7 @@
     toggleButton.style.top = '50px';
     toggleButton.style.right = '50px';
     toggleButton.style.zIndex = '2';
+    toggleButton.className = 'button';
 
     /*const tierSelect = document.createElement('select');
     tierSelect.style.position = 'absolute';
@@ -239,9 +255,9 @@
         })
         .catch(console.error);
     }
-    if (selectedFile){
+    //if (selectedFile){
       createScreen();
-    }
+    //}
 
     const importButton = document.createElement('button');
     importButton.innerText = 'Import T&L UI File (.azj)';
@@ -249,6 +265,7 @@
     importButton.style.top = '100px';
     importButton.style.right = '50px';
     importButton.style.zIndex = '2';
+    importButton.className = 'button';
 
     importButton.addEventListener('click', () => {
       const input = document.createElement('input');
