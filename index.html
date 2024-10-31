@@ -279,9 +279,9 @@
           })
           .catch(console.error);
       };
-      //if (selectedFile){
-      createScreen();
-      //}
+      if (selectedFile){
+        createScreen();
+      }
 
       const importButton = document.createElement("button");
       importButton.innerText = "Import T&L UI File (.azj)";
