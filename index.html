@@ -50,6 +50,13 @@
         color: white;
         box-sizing: border-box;
         z-index: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
       }
 
       #name {
@@ -59,15 +66,32 @@
       .button {
         outline: none;
         border: 1px solid lightgreen;
-        padding: 8px;
+        padding: 8px 12px;
         background-color: transparent;
         color: lightgreen;
         font-weight: bold;
         cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
       }
 
       .button:hover {
-        transform: scale(1.1);
+        background-color: rgba(144, 238, 144, 0.1);
+        transform: scale(1.05);
+      }
+
+      .button:active {
+        background-color: rgba(144, 238, 144, 0.2);
+        transform: scale(0.95);
+      }
+
+      kbd {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+        padding: 2px 4px;
+        font-size: 0.9em;
+        font-family: monospace;
       }
     </style>
   </head>
@@ -83,11 +107,7 @@
 
       let selectedFile;
 
-      const ACTUAL_SCALE = Object.entries(utils.scales).map(([k, v]) => {
-        if (k === "TIER_1") {
-          return v;
-        }
-      });
+      const ACTUAL_SCALE = utils.scales.TIER_5; // Default to TIER_5 (1.0 scale)
 
       let config = {
         systemResolution: { width: 1920, height: 1080 },
@@ -161,13 +181,18 @@
         item.style.height = `${height}px`;
         item.style.backgroundColor = getRandomColor();
         item.innerHTML = `<span>${utils.getNameById(componentKey)}</span>`;
+        item.title = "Click to hide this UI element"; // Add tooltip
         item.style.fontSize = "0.7vw";
         item.querySelector("span").style.opacity = "0.4";
         item.dataset.key = componentKey;
 
         item.style.transform = `scale(${config.viewportScale})`;
 
-        // Hover quando passa o mouse no bloco
+        item.style.display = "flex";
+        item.style.justifyContent = "center";
+        item.style.alignItems = "center";
+
+        // Hover effects
         item.addEventListener("mouseover", () => {
           item.querySelector("span").style.opacity = "1";
         });
@@ -176,21 +201,10 @@
           item.querySelector("span").style.opacity = "0.4";
         });
 
-        item.style.display = "flex";
-        item.style.justifyContent = "center";
-        item.style.alignItems = "center";
-
-        item.addEventListener("mouseover", () => {
-          item.style.border = "2px solid #FFD700";
-        });
-
+        // Click to hide
         item.addEventListener("click", () => {
           item.style.visibility = "hidden";
           hiddenItems.add(item);
-        });
-
-        item.addEventListener("mouseout", () => {
-          item.style.border = "none";
         });
 
         document.querySelector(".inner").appendChild(item);
@@ -226,32 +240,6 @@
       toggleButton.style.zIndex = "2";
       toggleButton.className = "button";
 
-      /*const tierSelect = document.createElement('select');
-    tierSelect.style.position = 'absolute';
-    tierSelect.style.top = '100px';
-    tierSelect.style.right = '50px';
-    tierSelect.style.zIndex = '2';
-
-    Object.keys(utils.scales).forEach(tier => {
-      const option = document.createElement('option');
-      option.value = tier;
-      option.text = tier;
-      tierSelect.appendChild(option);
-    });*/
-
-      /*tierSelect.addEventListener('change', (event) => {
-      const selectedTier = event.target.value;
-      const ACTUAL_SCALE = Object.entries(utils.scales).find(([k, v]) => k === selectedTier);
-      const [k, v] = ACTUAL_SCALE;
-
-      config.viewportScale = v;
-
-      removeAllItems();
-      createScreen(v);
-    });*/
-
-      // document.getElementById('canvas').appendChild(tierSelect);
-
       toggleButton.addEventListener("click", () => {
         grid.style.display = grid.style.display === "none" ? "block" : "none";
       });
@@ -261,10 +249,18 @@
       // Load items based on JSON
       const createScreen = (selectedViewportScale) => {
         fetch("./parser/test.json")
-          .then((response) =>
-            response.ok ? response.json() : Promise.reject("Failed to load")
-          )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Failed to load test file: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+          })
           .then((jsonData) => {
+            // Validate JSON structure
+            if (!jsonData.payload || !jsonData.payload.transforms || !jsonData.payload.reference) {
+              throw new Error("Invalid test file structure. Missing required payload, transforms, or reference data.");
+            }
+            
             const { transforms, reference } = jsonData.payload;
             config = { ...reference };
 
@@ -277,11 +273,14 @@
 
             transforms.forEach(addItem);
           })
-          .catch(console.error);
+          .catch((error) => {
+            console.error("Error loading default file:", error);
+            // Don't show alert for default file loading errors
+          });
       };
-      if (selectedFile){
-        createScreen();
-      }
+      
+      // Load default test file on initialization
+      createScreen();
 
       const importButton = document.createElement("button");
       importButton.innerText = "Import T&L UI File (.azj)";
@@ -299,10 +298,29 @@
         input.addEventListener("change", (event) => {
           const file = event.target.files[0];
           if (file && file.name.endsWith(".azj")) {
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+              alert("File is too large. Please select a file smaller than 5MB.");
+              return;
+            }
+            
             const reader = new FileReader();
             reader.onload = (e) => {
               try {
                 const jsonData = JSON.parse(e.target.result);
+                
+                // Validate JSON structure
+                if (!jsonData.payload || !jsonData.payload.transforms || !jsonData.payload.reference) {
+                  throw new Error("Invalid .azj file structure. Missing required payload, transforms, or reference data.");
+                }
+                
+                // Check if transforms array is too large
+                if (jsonData.payload.transforms.length > 500) {
+                  if (!confirm(`This file contains ${jsonData.payload.transforms.length} UI elements. Loading may be slow. Continue?`)) {
+                    return;
+                  }
+                }
+                
                 const { transforms, reference } = jsonData.payload;
                 config = { ...reference };
 
@@ -310,12 +328,11 @@
 
                 updateFileNameDisplay();
 
-                alert(`File ${selectedFile} was imported`);
-
                 removeAllItems();
                 transforms.forEach(addItem);
               } catch (error) {
                 console.error("Error parsing JSON:", error);
+                alert(`Error loading file: ${error.message}`);
               }
             };
             reader.readAsText(file);
@@ -323,27 +340,10 @@
             alert("Please upload a valid .azj file.");
           }
         });
-        input.addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const jsonData = JSON.parse(e.target.result);
-                const { transforms, reference } = jsonData.payload;
-                config = { ...reference };
 
-                removeAllItems();
-                transforms.forEach(addItem);
-              } catch (error) {
-                console.error("Error parsing JSON:", error);
-              }
-            };
-            reader.readAsText(file);
-          }
-        });
-
+        document.body.appendChild(input);
         input.click();
+        document.body.removeChild(input);
       });
 
       document.getElementById("canvas").appendChild(importButton);
@@ -359,19 +359,67 @@
       fileNameDisplay.style.zIndex = "2";
       fileNameDisplay.innerText = selectedFile
         ? `Loaded File: ${selectedFile}`
-        : "No file loaded";
+        : "Default test file loaded";
 
       document.getElementById("canvas").appendChild(fileNameDisplay);
+
+      // Add help instructions
+      const helpPanel = document.createElement("div");
+      helpPanel.style.position = "absolute";
+      helpPanel.style.bottom = "10px";
+      helpPanel.style.left = "10px";
+      helpPanel.style.color = "white";
+      helpPanel.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+      helpPanel.style.padding = "10px";
+      helpPanel.style.borderRadius = "5px";
+      helpPanel.style.fontSize = "0.8em";
+      helpPanel.style.zIndex = "2";
+      helpPanel.style.maxWidth = "300px";
+      helpPanel.innerHTML = `
+        <strong>Controls:</strong><br>
+        • Click UI elements to hide them<br>
+        • Press <kbd>G</kbd> to toggle grid<br>
+        • Press <kbd>H</kbd> to show hidden items<br>
+        • Press <kbd>I</kbd> to import file<br>
+        • Hover over elements for tooltips
+      `;
+
+      document.getElementById("canvas").appendChild(helpPanel);
 
       const updateFileNameDisplay = () => {
         fileNameDisplay.style.display = "block";
         fileNameDisplay.innerText = selectedFile
           ? `Loaded File: ${selectedFile}`
-          : "No file loaded";
-        setTimeout(() => {
-          fileNameDisplay.style.display = "none";
-        }, 5000);
+          : "Default test file loaded";
+        
+        // Only hide if a file was imported (not for default state)
+        if (selectedFile) {
+          setTimeout(() => {
+            fileNameDisplay.style.display = "none";
+          }, 3000);
+        }
       };
+
+      // Add keyboard shortcuts
+      document.addEventListener("keydown", (event) => {
+        // Press 'G' to toggle grid
+        if (event.key.toLowerCase() === 'g' && !event.ctrlKey && !event.altKey) {
+          event.preventDefault();
+          grid.style.display = grid.style.display === "none" ? "block" : "none";
+        }
+        
+        // Press 'H' to show hidden items
+        if (event.key.toLowerCase() === 'h' && !event.ctrlKey && !event.altKey) {
+          event.preventDefault();
+          showHiddenItems();
+        }
+        
+        // Press 'I' to import file
+        if (event.key.toLowerCase() === 'i' && !event.ctrlKey && !event.altKey) {
+          event.preventDefault();
+          importButton.click();
+        }
+      });
     </script>
   </body>
 </html>
