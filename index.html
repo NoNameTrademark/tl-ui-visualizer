@@ -12,6 +12,8 @@
         height: 100vh;
         margin: 0;
         background-color: #202020;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
       }
 
       #canvas {
@@ -21,6 +23,8 @@
         width: 1920px;
         height: 1080px;
         transform-origin: center;
+        border: 2px solid #444;
+        border-radius: 8px;
       }
 
       .inner {
@@ -40,6 +44,7 @@
         pointer-events: none;
         background-color: rgba(255, 255, 255, 0.2);
         border: 1px dashed #fff;
+        opacity: 0.3;
       }
 
       .item {
@@ -50,6 +55,14 @@
         color: white;
         box-sizing: border-box;
         z-index: 0;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .item:hover {
+        transform: scale(1.05);
+        z-index: 10;
       }
 
       #name {
@@ -59,15 +72,64 @@
       .button {
         outline: none;
         border: 1px solid lightgreen;
-        padding: 8px;
-        background-color: transparent;
+        padding: 8px 12px;
+        background-color: rgba(0, 0, 0, 0.7);
         color: lightgreen;
         font-weight: bold;
         cursor: pointer;
+        border-radius: 4px;
+        font-size: 12px;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(5px);
       }
 
       .button:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
+        background-color: rgba(0, 0, 0, 0.9);
+        box-shadow: 0 2px 8px rgba(0, 255, 0, 0.3);
+      }
+
+      .button:active {
+        transform: scale(0.98);
+      }
+
+      /* Responsive adjustments for smaller screens */
+      @media (max-width: 1920px) {
+        body {
+          padding: 20px;
+        }
+      }
+
+      @media (max-height: 1080px) {
+        body {
+          padding: 10px;
+        }
+      }
+
+      /* Accessibility improvements */
+      .button:focus {
+        outline: 2px solid lightgreen;
+        outline-offset: 2px;
+      }
+
+      .item:focus {
+        outline: 2px solid #FFD700;
+        outline-offset: 2px;
+      }
+
+      /* Loading animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: lightgreen;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
       }
     </style>
   </head>
@@ -80,6 +142,34 @@
 
     <script type="module">
       import * as utils from "./utils.js";
+
+      // Check browser compatibility on startup
+      const initCompatibilityCheck = () => {
+        const browserInfo = utils.compatibility.getBrowserInfo();
+        utils.logger.info(`Browser detected: ${browserInfo.browser}`);
+
+        if (!utils.compatibility.hasES6Modules()) {
+          utils.logger.warn('ES6 modules may not be fully supported');
+        }
+
+        if (!utils.compatibility.hasFileReader()) {
+          utils.logger.error('FileReader API not supported - file import will not work');
+          return false;
+        }
+
+        if (!utils.compatibility.hasFetch()) {
+          utils.logger.warn('Fetch API not supported - using fallback for file loading');
+        }
+
+        if (!utils.compatibility.hasCalcSupport()) {
+          utils.logger.warn('CSS calc() may not be fully supported');
+        }
+
+        return true;
+      };
+
+      // Initialize compatibility check
+      const isCompatible = initCompatibilityCheck();
 
       let selectedFile;
 
@@ -116,262 +206,436 @@
 
       // Calculate scale factor and apply to the canvas
       function resizeCanvas() {
-        const canvas = document.getElementById("canvas");
-        const scale = Math.min(
-          window.innerWidth / config.systemResolution.width,
-          window.innerHeight / config.systemResolution.height
-        );
-        canvas.style.transform = `scale(${scale})`;
+        try {
+          const canvas = document.getElementById("canvas");
+          if (!canvas) {
+            utils.logger.error('Canvas element not found');
+            return;
+          }
+          
+          const scale = Math.min(
+            window.innerWidth / config.systemResolution.width,
+            window.innerHeight / config.systemResolution.height
+          );
+          canvas.style.transform = `scale(${scale})`;
+        } catch (error) {
+          utils.logger.error('Error in resizeCanvas', error);
+        }
       }
 
-      // Add event listener to handle window resize
-      window.addEventListener("resize", resizeCanvas);
-      resizeCanvas();
+      // Add event listener to handle window resize with debouncing
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeCanvas, 100);
+      });
+      
+      // Initial resize
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', resizeCanvas);
+      } else {
+        resizeCanvas();
+      }
 
       // Example of adding items on the canvas
       let addedButtons = new Set();
 
       const removeAllItems = () => {
-        addedButtons.forEach((button) => button.remove());
-        addedButtons.clear();
+        try {
+          addedButtons.forEach((button) => {
+            if (button && button.parentNode) {
+              button.remove();
+            }
+          });
+          addedButtons.clear();
+          hiddenItems.clear();
+        } catch (error) {
+          utils.logger.error('Error removing items', error);
+        }
       };
 
       // Define a list to store hidden canvas elements
       let hiddenItems = new Set();
 
       function addItem(transform) {
-        if (transform?.translate?.x === undefined) {
-          console.log(`fudido: ${transform?.componentKey}`);
-        }
-        const { componentKey, desiredSize, align } = transform;
-        const { width, height } = desiredSize;
-        const { x, y } = transform.translate;
+        try {
+          if (!transform || transform?.translate?.x === undefined) {
+            utils.logger.warn(`Invalid transform data for component: ${transform?.componentKey}`);
+            return;
+          }
 
-        const item = document.createElement("div");
-        item.className = "item";
+          const { componentKey, desiredSize, align } = transform;
+          const { width, height } = desiredSize || { width: 100, height: 50 };
+          const { x, y } = transform.translate;
 
-        // Position
-        Object.entries(
-          utils.getCorrectedAlignment(align, transform.translate)
-        ).forEach(([key, val]) => {
-          item.style[key] = val;
-        });
+          const item = document.createElement("div");
+          item.className = "item";
 
-        item.style.width = `${width}px`;
-        item.style.height = `${height}px`;
-        item.style.backgroundColor = getRandomColor();
-        item.innerHTML = `<span>${utils.getNameById(componentKey)}</span>`;
-        item.style.fontSize = "0.7vw";
-        item.querySelector("span").style.opacity = "0.4";
-        item.dataset.key = componentKey;
+          // Position using enhanced alignment function
+          const alignment = utils.getCorrectedAlignment(align, transform.translate);
+          Object.entries(alignment).forEach(([key, val]) => {
+            item.style[key] = val;
+          });
 
-        item.style.transform = `scale(${config.viewportScale})`;
-
-        // Hover quando passa o mouse no bloco
-        item.addEventListener("mouseover", () => {
-          item.querySelector("span").style.opacity = "1";
-        });
-
-        item.addEventListener("mouseout", () => {
+          item.style.width = `${width}px`;
+          item.style.height = `${height}px`;
+          item.style.backgroundColor = getRandomColor();
+          item.innerHTML = `<span>${utils.getNameById(componentKey)}</span>`;
+          item.style.fontSize = "0.7vw";
           item.querySelector("span").style.opacity = "0.4";
-        });
+          item.dataset.key = componentKey;
 
-        item.style.display = "flex";
-        item.style.justifyContent = "center";
-        item.style.alignItems = "center";
+          item.style.transform = `scale(${config.viewportScale})`;
 
-        item.addEventListener("mouseover", () => {
-          item.style.border = "2px solid #FFD700";
-        });
+          // Enhanced hover effects
+          const span = item.querySelector("span");
+          item.addEventListener("mouseover", () => {
+            span.style.opacity = "1";
+            item.style.border = "2px solid #FFD700";
+          });
 
-        item.addEventListener("click", () => {
-          item.style.visibility = "hidden";
-          hiddenItems.add(item);
-        });
+          item.addEventListener("mouseout", () => {
+            span.style.opacity = "0.4";
+            item.style.border = "none";
+          });
 
-        item.addEventListener("mouseout", () => {
-          item.style.border = "none";
-        });
+          // Click to hide functionality
+          item.addEventListener("click", () => {
+            item.style.visibility = "hidden";
+            hiddenItems.add(item);
+          });
 
-        document.querySelector(".inner").appendChild(item);
-        addedButtons.add(item);
+          item.style.display = "flex";
+          item.style.justifyContent = "center";
+          item.style.alignItems = "center";
+
+          const innerContainer = document.querySelector(".inner");
+          if (innerContainer) {
+            innerContainer.appendChild(item);
+            addedButtons.add(item);
+          } else {
+            utils.logger.error('Inner container not found');
+          }
+        } catch (error) {
+          utils.logger.error('Error adding item', error);
+        }
       }
 
       function showHiddenItems() {
-        hiddenItems.forEach((item) => {
-          item.style.visibility = "visible";
-        });
+        try {
+          hiddenItems.forEach((item) => {
+            if (item) {
+              item.style.visibility = "visible";
+            }
+          });
+          hiddenItems.clear();
+        } catch (error) {
+          utils.logger.error('Error showing hidden items', error);
+        }
       }
 
-      // Show hidden items
-      const showItems = document.createElement("button");
-      showItems.innerText = "Show Hidden Items";
-      showItems.style.position = "absolute";
-      showItems.style.top = "150px";
-      showItems.style.right = "50px";
-      showItems.style.zIndex = "2";
-      showItems.className = "button";
-
-      showItems.addEventListener("click", showHiddenItems);
-
-      document.getElementById("canvas").appendChild(showItems);
-
-      // Toggle grid visibility
-      const grid = document.querySelector(".grid");
-      const toggleButton = document.createElement("button");
-      toggleButton.innerText = "Toggle Grid";
-      toggleButton.style.position = "absolute";
-      toggleButton.style.top = "50px";
-      toggleButton.style.right = "50px";
-      toggleButton.style.zIndex = "2";
-      toggleButton.className = "button";
-
-      /*const tierSelect = document.createElement('select');
-    tierSelect.style.position = 'absolute';
-    tierSelect.style.top = '100px';
-    tierSelect.style.right = '50px';
-    tierSelect.style.zIndex = '2';
-
-    Object.keys(utils.scales).forEach(tier => {
-      const option = document.createElement('option');
-      option.value = tier;
-      option.text = tier;
-      tierSelect.appendChild(option);
-    });*/
-
-      /*tierSelect.addEventListener('change', (event) => {
-      const selectedTier = event.target.value;
-      const ACTUAL_SCALE = Object.entries(utils.scales).find(([k, v]) => k === selectedTier);
-      const [k, v] = ACTUAL_SCALE;
-
-      config.viewportScale = v;
-
-      removeAllItems();
-      createScreen(v);
-    });*/
-
-      // document.getElementById('canvas').appendChild(tierSelect);
-
-      toggleButton.addEventListener("click", () => {
-        grid.style.display = grid.style.display === "none" ? "block" : "none";
-      });
-
-      document.getElementById("canvas").appendChild(toggleButton);
-
-      // Load items based on JSON
-      const createScreen = (selectedViewportScale) => {
-        fetch("./parser/test.json")
-          .then((response) =>
-            response.ok ? response.json() : Promise.reject("Failed to load")
-          )
-          .then((jsonData) => {
-            const { transforms, reference } = jsonData.payload;
-            config = { ...reference };
-
-            if (selectedViewportScale) {
-              config = {
-                ...reference,
-                viewportScale: selectedViewportScale,
-              };
+      // Enhanced fetch with fallback for older browsers
+      const safeFetch = async (url) => {
+        if (utils.compatibility.hasFetch()) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            transforms.forEach(addItem);
-          })
-          .catch(console.error);
+            return await response.json();
+          } catch (error) {
+            utils.logger.error(`Fetch failed for ${url}`, error);
+            throw error;
+          }
+        } else {
+          // Fallback for older browsers using XMLHttpRequest
+          return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                try {
+                  resolve(JSON.parse(xhr.responseText));
+                } catch (e) {
+                  reject(new Error('Failed to parse JSON'));
+                }
+              } else {
+                reject(new Error(`HTTP error! status: ${xhr.status}`));
+              }
+            };
+            xhr.onerror = () => reject(new Error('Network error'));
+            xhr.send();
+          });
+        }
       };
-      if (selectedFile){
+
+      // Load items based on JSON with enhanced error handling
+      const createScreen = async (selectedViewportScale) => {
+        try {
+          utils.logger.info('Loading test.json file...');
+          const jsonData = await safeFetch("./parser/test.json");
+          
+          if (!jsonData || !jsonData.payload) {
+            throw new Error('Invalid JSON structure - missing payload');
+          }
+
+          const { transforms, reference } = jsonData.payload;
+          
+          if (!transforms || !Array.isArray(transforms)) {
+            throw new Error('Invalid JSON structure - missing or invalid transforms array');
+          }
+
+          config = { ...reference };
+
+          if (selectedViewportScale) {
+            config = {
+              ...reference,
+              viewportScale: selectedViewportScale,
+            };
+          }
+
+          utils.logger.info(`Loading ${transforms.length} UI components...`);
+          transforms.forEach(addItem);
+          utils.logger.info('UI components loaded successfully');
+          
+        } catch (error) {
+          utils.logger.error('Failed to create screen', error);
+          // Show user-friendly error message
+          showErrorMessage('Failed to load default UI layout. Please try importing a .azj file.');
+        }
+      };
+
+      // Show error message to user
+      const showErrorMessage = (message) => {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.position = 'absolute';
+        errorDiv.style.top = '50%';
+        errorDiv.style.left = '50%';
+        errorDiv.style.transform = 'translate(-50%, -50%)';
+        errorDiv.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+        errorDiv.style.color = 'white';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.borderRadius = '10px';
+        errorDiv.style.zIndex = '1000';
+        errorDiv.style.maxWidth = '80%';
+        errorDiv.style.textAlign = 'center';
+        errorDiv.innerHTML = `
+          <h3>Error</h3>
+          <p>${message}</p>
+          <button onclick="this.parentElement.remove()" style="margin-top: 10px; padding: 5px 10px; background: white; color: black; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+        `;
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+          if (errorDiv.parentElement) {
+            errorDiv.remove();
+          }
+        }, 10000);
+      };
+
+      // Initialize screen if no selected file
+      if (!selectedFile) {
         createScreen();
       }
 
-      const importButton = document.createElement("button");
-      importButton.innerText = "Import T&L UI File (.azj)";
-      importButton.style.position = "absolute";
-      importButton.style.top = "100px";
-      importButton.style.right = "50px";
-      importButton.style.zIndex = "2";
-      importButton.className = "button";
+      // Enhanced file import with better validation and error handling
+      const createImportButton = () => {
+        const importButton = document.createElement("button");
+        importButton.innerText = "Import T&L UI File (.azj)";
+        importButton.style.position = "absolute";
+        importButton.style.top = "100px";
+        importButton.style.right = "50px";
+        importButton.style.zIndex = "2";
+        importButton.className = "button";
 
-      importButton.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".azj";
-        input.style.display = "none";
-        input.addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (file && file.name.endsWith(".azj")) {
+        importButton.addEventListener("click", () => {
+          if (!utils.compatibility.hasFileReader()) {
+            showErrorMessage('File import is not supported in this browser. Please use a modern browser.');
+            return;
+          }
+
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = ".azj";
+          input.style.display = "none";
+          
+          input.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.toLowerCase().endsWith(".azj")) {
+              showErrorMessage("Please upload a valid .azj file.");
+              return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+              showErrorMessage("File is too large. Please select a file smaller than 10MB.");
+              return;
+            }
+
             const reader = new FileReader();
+            
             reader.onload = (e) => {
               try {
+                utils.logger.info(`Processing file: ${file.name}`);
                 const jsonData = JSON.parse(e.target.result);
-                const { transforms, reference } = jsonData.payload;
-                config = { ...reference };
+                
+                if (!jsonData || !jsonData.payload) {
+                  throw new Error('Invalid .azj file format - missing payload');
+                }
 
+                const { transforms, reference } = jsonData.payload;
+                
+                if (!transforms || !Array.isArray(transforms)) {
+                  throw new Error('Invalid .azj file format - missing or invalid transforms');
+                }
+
+                config = { ...reference };
                 selectedFile = file.name;
 
                 updateFileNameDisplay();
-
-                alert(`File ${selectedFile} was imported`);
-
                 removeAllItems();
                 transforms.forEach(addItem);
+                
+                utils.logger.info(`Successfully loaded ${transforms.length} UI components from ${file.name}`);
+                
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.style.position = 'absolute';
+                successDiv.style.top = '50px';
+                successDiv.style.left = '50%';
+                successDiv.style.transform = 'translateX(-50%)';
+                successDiv.style.backgroundColor = 'rgba(0, 255, 0, 0.8)';
+                successDiv.style.color = 'white';
+                successDiv.style.padding = '10px 20px';
+                successDiv.style.borderRadius = '5px';
+                successDiv.style.zIndex = '1000';
+                successDiv.textContent = `File ${selectedFile} imported successfully!`;
+                document.body.appendChild(successDiv);
+                
+                setTimeout(() => {
+                  if (successDiv.parentElement) {
+                    successDiv.remove();
+                  }
+                }, 3000);
+
               } catch (error) {
-                console.error("Error parsing JSON:", error);
+                utils.logger.error('Error parsing .azj file', error);
+                showErrorMessage(`Failed to parse .azj file: ${error.message}`);
               }
             };
-            reader.readAsText(file);
-          } else {
-            alert("Please upload a valid .azj file.");
-          }
-        });
-        input.addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const jsonData = JSON.parse(e.target.result);
-                const { transforms, reference } = jsonData.payload;
-                config = { ...reference };
 
-                removeAllItems();
-                transforms.forEach(addItem);
-              } catch (error) {
-                console.error("Error parsing JSON:", error);
-              }
+            reader.onerror = () => {
+              utils.logger.error('FileReader error');
+              showErrorMessage('Failed to read the selected file.');
             };
+
             reader.readAsText(file);
-          }
+          });
+
+          input.click();
         });
 
-        input.click();
-      });
-
-      document.getElementById("canvas").appendChild(importButton);
-
-      const fileNameDisplay = document.createElement("div");
-      fileNameDisplay.style.position = "absolute";
-      fileNameDisplay.style.top = "10px";
-      fileNameDisplay.style.left = "10px";
-      fileNameDisplay.style.color = "white";
-      fileNameDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-      fileNameDisplay.style.padding = "5px 10px";
-      fileNameDisplay.style.borderRadius = "5px";
-      fileNameDisplay.style.zIndex = "2";
-      fileNameDisplay.innerText = selectedFile
-        ? `Loaded File: ${selectedFile}`
-        : "No file loaded";
-
-      document.getElementById("canvas").appendChild(fileNameDisplay);
-
-      const updateFileNameDisplay = () => {
-        fileNameDisplay.style.display = "block";
-        fileNameDisplay.innerText = selectedFile
-          ? `Loaded File: ${selectedFile}`
-          : "No file loaded";
-        setTimeout(() => {
-          fileNameDisplay.style.display = "none";
-        }, 5000);
+        return importButton;
       };
+
+      // Create UI elements
+      const createUIElements = () => {
+        const canvas = document.getElementById("canvas");
+        if (!canvas) {
+          utils.logger.error('Canvas element not found');
+          return;
+        }
+
+        // Show hidden items
+        const showItems = document.createElement("button");
+        showItems.innerText = "Show Hidden Items";
+        showItems.style.position = "absolute";
+        showItems.style.top = "150px";
+        showItems.style.right = "50px";
+        showItems.style.zIndex = "2";
+        showItems.className = "button";
+        showItems.addEventListener("click", showHiddenItems);
+        canvas.appendChild(showItems);
+
+        // Toggle grid visibility
+        const grid = document.querySelector(".grid");
+        const toggleButton = document.createElement("button");
+        toggleButton.innerText = "Toggle Grid";
+        toggleButton.style.position = "absolute";
+        toggleButton.style.top = "50px";
+        toggleButton.style.right = "50px";
+        toggleButton.style.zIndex = "2";
+        toggleButton.className = "button";
+
+        toggleButton.addEventListener("click", () => {
+          if (grid) {
+            grid.style.display = grid.style.display === "none" ? "block" : "none";
+          }
+        });
+        canvas.appendChild(toggleButton);
+
+        // Import button
+        const importButton = createImportButton();
+        canvas.appendChild(importButton);
+
+        // File name display
+        const fileNameDisplay = document.createElement("div");
+        fileNameDisplay.style.position = "absolute";
+        fileNameDisplay.style.top = "10px";
+        fileNameDisplay.style.left = "10px";
+        fileNameDisplay.style.color = "white";
+        fileNameDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+        fileNameDisplay.style.padding = "8px 12px";
+        fileNameDisplay.style.borderRadius = "5px";
+        fileNameDisplay.style.zIndex = "2";
+        fileNameDisplay.style.fontSize = "14px";
+        fileNameDisplay.style.fontFamily = "monospace";
+        fileNameDisplay.style.display = "none"; // Hidden by default
+        fileNameDisplay.innerText = "No file loaded";
+        canvas.appendChild(fileNameDisplay);
+
+        // Update file name display function
+        window.updateFileNameDisplay = () => {
+          fileNameDisplay.style.display = "block";
+          fileNameDisplay.innerText = selectedFile
+            ? `Loaded File: ${selectedFile}`
+            : "No file loaded";
+          
+          if (selectedFile) {
+            // Hide after 5 seconds if a file is loaded
+            setTimeout(() => {
+              fileNameDisplay.style.display = "none";
+            }, 5000);
+          }
+        };
+
+        // Show initial state
+        updateFileNameDisplay();
+      };
+
+      // Initialize everything when DOM is ready
+      const initialize = () => {
+        try {
+          if (!isCompatible) {
+            showErrorMessage('This browser may not fully support all features. Please use a modern browser for the best experience.');
+          }
+          
+          createUIElements();
+          utils.logger.info('TL UI Visualizer initialized successfully');
+        } catch (error) {
+          utils.logger.error('Failed to initialize application', error);
+          showErrorMessage('Failed to initialize the application. Please refresh the page and try again.');
+        }
+      };
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+      } else {
+        initialize();
+      }
     </script>
   </body>
 </html>

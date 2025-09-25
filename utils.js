@@ -1,3 +1,63 @@
+// Browser compatibility checks
+export const compatibility = {
+  // Check if ES6 modules are supported
+  hasES6Modules: () => {
+    try {
+      return typeof window !== 'undefined' && 'noModule' in HTMLScriptElement.prototype;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  // Check if FileReader API is supported
+  hasFileReader: () => {
+    return typeof window !== 'undefined' && 'FileReader' in window;
+  },
+
+  // Check if fetch API is supported
+  hasFetch: () => {
+    return typeof window !== 'undefined' && 'fetch' in window;
+  },
+
+  // Check if CSS calc() is supported
+  hasCalcSupport: () => {
+    try {
+      const div = document.createElement('div');
+      div.style.width = 'calc(10px + 10px)';
+      return div.style.width === 'calc(10px + 10px)';
+    } catch (e) {
+      return false;
+    }
+  },
+
+  // Get browser info for debugging
+  getBrowserInfo: () => {
+    const ua = navigator.userAgent;
+    let browser = 'Unknown';
+    if (ua.includes('Chrome')) browser = 'Chrome';
+    else if (ua.includes('Firefox')) browser = 'Firefox';
+    else if (ua.includes('Safari')) browser = 'Safari';
+    else if (ua.includes('Edge')) browser = 'Edge';
+    return { browser, userAgent: ua };
+  }
+};
+
+// Enhanced error logging
+export const logger = {
+  error: (message, error = null) => {
+    console.error(`[TL-UI-Visualizer Error]: ${message}`, error);
+    // Could be extended to send to analytics or error reporting service
+  },
+  
+  warn: (message) => {
+    console.warn(`[TL-UI-Visualizer Warning]: ${message}`);
+  },
+  
+  info: (message) => {
+    console.log(`[TL-UI-Visualizer Info]: ${message}`);
+  }
+};
+
 const components = {
   1: "MAIN_MENU",
   3: "TOGGLE_CHAT_BUTTON",
@@ -59,17 +119,18 @@ export const getCorrectedAlignment = (alignment, translation) => {
   const { x, y } = translation;
   
   const alignments = {
-    RightBottom: { left:  `calc((100% + ${x}px)`, top: `calc(100% + ${y}px)`,  },
-    LeftBottom: { right: `calc(50% + ${x}px)`, top: `${y}px`,  },
-    CenterTop: { right: `calc(50% + ${x}px)`, top: `${y}px`, },
-    LeftCenter: { right:  `calc(0 + ${x}px)`, top: `calc(50% + ${y}px)`,  },
-    CenterBottom: { left: `calc(50% + ${x}px)`, top: `calc(100% + ${y}px)`, },
-    LeftTop: { right: `calc(0 + ${x}px)`, top: `calc(0 + ${y}px)` },
-    RightTop: { left: `calc(100% + ${x}px)`, top: `calc(0 + ${y}px)` },
+    RightBottom: { left: `calc(100% + ${x}px)`, top: `calc(100% + ${y}px)` },
+    LeftBottom: { right: `calc(50% + ${x}px)`, top: `${y}px` },
+    CenterTop: { left: `calc(50% + ${x}px)`, top: `${y}px` },
+    LeftCenter: { right: `calc(0px + ${x}px)`, top: `calc(50% + ${y}px)` },
+    RightCenter: { left: `calc(100% + ${x}px)`, top: `calc(50% + ${y}px)` },
+    CenterBottom: { left: `calc(50% + ${x}px)`, top: `calc(100% + ${y}px)` },
+    LeftTop: { right: `calc(0px + ${x}px)`, top: `calc(0px + ${y}px)` },
+    RightTop: { left: `calc(100% + ${x}px)`, top: `calc(0px + ${y}px)` },
     CenterCenter: {
       left: `calc(50% + ${x}px)`,
       top: `calc(50% + ${y}px)`,
     },
   };
-  return alignments[alignment] ?? "missing: " + alignment;
+  return alignments[alignment] || { left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` };
 };
