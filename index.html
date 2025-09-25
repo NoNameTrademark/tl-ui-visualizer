@@ -83,11 +83,7 @@
 
       let selectedFile;
 
-      const ACTUAL_SCALE = Object.entries(utils.scales).map(([k, v]) => {
-        if (k === "TIER_1") {
-          return v;
-        }
-      });
+      const ACTUAL_SCALE = utils.scales.TIER_5; // Default to TIER_5 (1.0 scale)
 
       let config = {
         systemResolution: { width: 1920, height: 1080 },
@@ -226,32 +222,6 @@
       toggleButton.style.zIndex = "2";
       toggleButton.className = "button";
 
-      /*const tierSelect = document.createElement('select');
-    tierSelect.style.position = 'absolute';
-    tierSelect.style.top = '100px';
-    tierSelect.style.right = '50px';
-    tierSelect.style.zIndex = '2';
-
-    Object.keys(utils.scales).forEach(tier => {
-      const option = document.createElement('option');
-      option.value = tier;
-      option.text = tier;
-      tierSelect.appendChild(option);
-    });*/
-
-      /*tierSelect.addEventListener('change', (event) => {
-      const selectedTier = event.target.value;
-      const ACTUAL_SCALE = Object.entries(utils.scales).find(([k, v]) => k === selectedTier);
-      const [k, v] = ACTUAL_SCALE;
-
-      config.viewportScale = v;
-
-      removeAllItems();
-      createScreen(v);
-    });*/
-
-      // document.getElementById('canvas').appendChild(tierSelect);
-
       toggleButton.addEventListener("click", () => {
         grid.style.display = grid.style.display === "none" ? "block" : "none";
       });
@@ -261,10 +231,18 @@
       // Load items based on JSON
       const createScreen = (selectedViewportScale) => {
         fetch("./parser/test.json")
-          .then((response) =>
-            response.ok ? response.json() : Promise.reject("Failed to load")
-          )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Failed to load test file: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+          })
           .then((jsonData) => {
+            // Validate JSON structure
+            if (!jsonData.payload || !jsonData.payload.transforms || !jsonData.payload.reference) {
+              throw new Error("Invalid test file structure. Missing required payload, transforms, or reference data.");
+            }
+            
             const { transforms, reference } = jsonData.payload;
             config = { ...reference };
 
@@ -277,11 +255,14 @@
 
             transforms.forEach(addItem);
           })
-          .catch(console.error);
+          .catch((error) => {
+            console.error("Error loading default file:", error);
+            // Don't show alert for default file loading errors
+          });
       };
-      if (selectedFile){
-        createScreen();
-      }
+      
+      // Load default test file on initialization
+      createScreen();
 
       const importButton = document.createElement("button");
       importButton.innerText = "Import T&L UI File (.azj)";
@@ -303,6 +284,12 @@
             reader.onload = (e) => {
               try {
                 const jsonData = JSON.parse(e.target.result);
+                
+                // Validate JSON structure
+                if (!jsonData.payload || !jsonData.payload.transforms || !jsonData.payload.reference) {
+                  throw new Error("Invalid .azj file structure. Missing required payload, transforms, or reference data.");
+                }
+                
                 const { transforms, reference } = jsonData.payload;
                 config = { ...reference };
 
@@ -310,12 +297,11 @@
 
                 updateFileNameDisplay();
 
-                alert(`File ${selectedFile} was imported`);
-
                 removeAllItems();
                 transforms.forEach(addItem);
               } catch (error) {
                 console.error("Error parsing JSON:", error);
+                alert(`Error loading file: ${error.message}`);
               }
             };
             reader.readAsText(file);
@@ -323,27 +309,10 @@
             alert("Please upload a valid .azj file.");
           }
         });
-        input.addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const jsonData = JSON.parse(e.target.result);
-                const { transforms, reference } = jsonData.payload;
-                config = { ...reference };
 
-                removeAllItems();
-                transforms.forEach(addItem);
-              } catch (error) {
-                console.error("Error parsing JSON:", error);
-              }
-            };
-            reader.readAsText(file);
-          }
-        });
-
+        document.body.appendChild(input);
         input.click();
+        document.body.removeChild(input);
       });
 
       document.getElementById("canvas").appendChild(importButton);
@@ -359,7 +328,7 @@
       fileNameDisplay.style.zIndex = "2";
       fileNameDisplay.innerText = selectedFile
         ? `Loaded File: ${selectedFile}`
-        : "No file loaded";
+        : "Default test file loaded";
 
       document.getElementById("canvas").appendChild(fileNameDisplay);
 
@@ -367,10 +336,14 @@
         fileNameDisplay.style.display = "block";
         fileNameDisplay.innerText = selectedFile
           ? `Loaded File: ${selectedFile}`
-          : "No file loaded";
-        setTimeout(() => {
-          fileNameDisplay.style.display = "none";
-        }, 5000);
+          : "Default test file loaded";
+        
+        // Only hide if a file was imported (not for default state)
+        if (selectedFile) {
+          setTimeout(() => {
+            fileNameDisplay.style.display = "none";
+          }, 3000);
+        }
       };
     </script>
   </body>

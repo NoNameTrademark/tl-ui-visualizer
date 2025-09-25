@@ -59,13 +59,14 @@ export const getCorrectedAlignment = (alignment, translation) => {
   const { x, y } = translation;
   
   const alignments = {
-    RightBottom: { left:  `calc((100% + ${x}px)`, top: `calc(100% + ${y}px)`,  },
-    LeftBottom: { right: `calc(50% + ${x}px)`, top: `${y}px`,  },
-    CenterTop: { right: `calc(50% + ${x}px)`, top: `${y}px`, },
-    LeftCenter: { right:  `calc(0 + ${x}px)`, top: `calc(50% + ${y}px)`,  },
-    CenterBottom: { left: `calc(50% + ${x}px)`, top: `calc(100% + ${y}px)`, },
-    LeftTop: { right: `calc(0 + ${x}px)`, top: `calc(0 + ${y}px)` },
-    RightTop: { left: `calc(100% + ${x}px)`, top: `calc(0 + ${y}px)` },
+    RightBottom: { left: `calc(100% + ${x}px)`, top: `calc(100% + ${y}px)` },
+    LeftBottom: { left: `calc(0% + ${x}px)`, top: `calc(100% + ${y}px)` },
+    CenterTop: { left: `calc(50% + ${x}px)`, top: `calc(0% + ${y}px)` },
+    LeftCenter: { left: `calc(0% + ${x}px)`, top: `calc(50% + ${y}px)` },
+    RightCenter: { left: `calc(100% + ${x}px)`, top: `calc(50% + ${y}px)` },
+    CenterBottom: { left: `calc(50% + ${x}px)`, top: `calc(100% + ${y}px)` },
+    LeftTop: { left: `calc(0% + ${x}px)`, top: `calc(0% + ${y}px)` },
+    RightTop: { left: `calc(100% + ${x}px)`, top: `calc(0% + ${y}px)` },
     CenterCenter: {
       left: `calc(50% + ${x}px)`,
       top: `calc(50% + ${y}px)`,
