@@ -1,69 +1,50 @@
-# TL UI Visualizer — Enhanced Compatibility
+# tl-ui-visualizer
 
-This version improves compatibility with Throne and Liberty `.azj` UI layout files across different resolutions, UI scales, and player configurations.
+This is an experimental project where you can visualize your Throne and Liberty custom UI placements file (.azj) in web, have in mind
+that the positioning is a bit faulty and not reflecting perfectly, but you can have a small brief about how it will be ingame before importing.
 
-## What’s new
+![test project](/assets/ui.png)
 
-- Dynamic resolution and scale support
-  - Automatically reads `systemResolution`, `gameResolution`, and `viewportScale` from the imported `.azj` (JSON).
-  - Renders consistently across 1080p, 1440p, ultrawide, and arbitrary UI scales (e.g., 0.75, 1.0, 1.1).
-- Multilingual component names
-  - English (EN), Korean (KO), French (FR) via `components-database.json`.
-  - Language switcher in the header.
-- Enhanced visualization and UX
-  - Category-based colors with a legend.
-  - Filters to show/hide unknown components, hidden/inactive items, and variant overlays.
-  - Tooltips with ID, base component, category, and translations.
-  - Status panel showing counts and resolution/scale metadata.
-- Robust parsing and error handling
-  - Validates `.azj` JSON structure with helpful errors.
-  - Unknown IDs render using a safe fallback and neutral color (no crashes).
-  - Variant mapping supported and toggled via UI.
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Installation
+
+Instructions on how to install and set up the project.
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/yourproject.git
+
+# Navigate to the project directory
+cd yourproject
+
+Run live server and test
 
 ## Usage
 
-1. Open `index.html` in a modern browser (no build step required).
-2. Click the file picker and load a `.azj` JSON file.
-3. Use the language picker (EN / 한국어 / FR) to adjust labels.
-4. Adjust filters to show/hide unknowns, variants, and hidden items.
+How to use the project after installation.
 
-Tip: The app attempts to adapt to multiple input shapes. If your `.azj` uses different keys for component geometry, the parser tries common alternatives.
-
-## Files
-
-- `components-database.json`
-  - Extensible database of component metadata: names, categories, and variants.
-  - Add missing entries as needed; unknown items are still rendered safely.
-- `utils.js`
-  - Database loading and lookup helpers.
-  - `.azj` parsing and dynamic viewport transform.
-- `index.html`
-  - UI, canvas rendering (SVG), filters, legend, status, and tooltips.
-
-## Extending the component database
-
-Add or edit entries in `components-database.json`. Example:
-
-```json
-{ "id": 123, "key": "example", "name_en": "Example", "name_ko": "예시", "name_fr": "Exemple", "category": "General" }
+```bash
+# Run the project
+npm start
 ```
 
-- Set `variantsOf` for variants:
-```json
-{ "id": 10123, "variantsOf": 123, "name_en": "Example Variant", "category": "General" }
-```
+## Contributing
 
-If `variantsOf` is omitted, the visualizer will also try a generic rule (`id >= 10000` → base `id - 10000`) when the base exists.
+Guidelines for contributing to the project.
 
-## Troubleshooting
-
-- “Failed to load component database”
-  - Ensure `components-database.json` is present next to `index.html` and served with correct MIME type.
-- “No UI components found”
-  - Your `.azj` schema may differ. The parser checks `components`, `items`, `ui`, `nodes`, and `layout.components`. Update `parseAzj` if needed.
-- Misplaced elements at unusual scales
-  - Check `viewportScale` in your file. The visualizer scales the canvas using this value.
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes.
+4. Commit your changes (`git commit -m 'Add some feature'`).
+5. Push to the branch (`git push origin feature-branch`).
+6. Open a pull request.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
