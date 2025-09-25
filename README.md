@@ -1,69 +1,57 @@
-# TL UI Visualizer — Enhanced Compatibility
+# TL UI Visualizer — Enhanced
 
-This version improves compatibility with Throne and Liberty `.azj` UI layout files across different resolutions, UI scales, and player configurations.
+Cette version ajoute une base de données de composants, une gestion de résolution dynamique, un sélecteur de langue, des filtres, et des validations plus robustes.
 
-## What’s new
+## Utilisation
 
-- Dynamic resolution and scale support
-  - Automatically reads `systemResolution`, `gameResolution`, and `viewportScale` from the imported `.azj` (JSON).
-  - Renders consistently across 1080p, 1440p, ultrawide, and arbitrary UI scales (e.g., 0.75, 1.0, 1.1).
-- Multilingual component names
-  - English (EN), Korean (KO), French (FR) via `components-database.json`.
-  - Language switcher in the header.
-- Enhanced visualization and UX
-  - Category-based colors with a legend.
-  - Filters to show/hide unknown components, hidden/inactive items, and variant overlays.
-  - Tooltips with ID, base component, category, and translations.
-  - Status panel showing counts and resolution/scale metadata.
-- Robust parsing and error handling
-  - Validates `.azj` JSON structure with helpful errors.
-  - Unknown IDs render using a safe fallback and neutral color (no crashes).
-  - Variant mapping supported and toggled via UI.
+1. Ouvrez `index.html` (hébergé ou en local via un serveur statique).
+2. Cliquez sur “Choisir un fichier” et **sélectionnez un JSON** exporté depuis votre .azj (voir Conversion ci-dessous).
+3. La scène s’affiche, la légende et les compteurs se mettent à jour.
 
-## Usage
+> Important: les fichiers `.azj` du jeu sont généralement binaires et **ne sont pas lisibles directement** dans le navigateur. Convertissez d'abord en JSON.
 
-1. Open `index.html` in a modern browser (no build step required).
-2. Click the file picker and load a `.azj` JSON file.
-3. Use the language picker (EN / 한국어 / FR) to adjust labels.
-4. Adjust filters to show/hide unknowns, variants, and hidden items.
+## Conversion .azj → JSON
 
-Tip: The app attempts to adapt to multiple input shapes. If your `.azj` uses different keys for component geometry, the parser tries common alternatives.
+Le dossier [`parser/`](parser) contient un petit exemple de script Node pour manipuler un JSON de test, mais **ce n’est pas un convertisseur binaire `.azj`**.
 
-## Files
+Si vous disposez d'un `.azj` déjà exporté en JSON (par un outil externe), importez directement ce JSON dans le visualiseur.
 
-- `components-database.json`
-  - Extensible database of component metadata: names, categories, and variants.
-  - Add missing entries as needed; unknown items are still rendered safely.
-- `utils.js`
-  - Database loading and lookup helpers.
-  - `.azj` parsing and dynamic viewport transform.
-- `index.html`
-  - UI, canvas rendering (SVG), filters, legend, status, and tooltips.
+Sinon:
+- Préparez/obtenez une conversion de votre `.azj` binaire vers un JSON lisible (outils externes/communauté).
+- Vérifiez que le JSON commence par `{` ou `[` et qu'il contient une liste de composants (ex: `components`, `items`, `ui`, `nodes` ou `payload.transforms`).
 
-## Extending the component database
-
-Add or edit entries in `components-database.json`. Example:
-
-```json
-{ "id": 123, "key": "example", "name_en": "Example", "name_ko": "예시", "name_fr": "Exemple", "category": "General" }
+Exemples (Node.js requis) pour manipuler le JSON de test fourni:
+```bash
+cd parser
+node parser.js
+# -> génère parser/output.json à partir de parser/test.json
 ```
 
-- Set `variantsOf` for variants:
-```json
-{ "id": 10123, "variantsOf": 123, "name_en": "Example Variant", "category": "General" }
-```
+## Import dans l’UI
 
-If `variantsOf` is omitted, the visualizer will also try a generic rule (`id >= 10000` → base `id - 10000`) when the base exists.
+- Le champ de fichier accepte `.json,.azj`.
+- Si le contenu n’est pas du JSON, un message clair s’affiche avec le rappel de conversion.
+- Un événement `window` est émis quand un fichier valide est chargé:
+  - `window.addEventListener('azj:loaded', (e) => { console.log(e.detail); });`
+  - `e.detail` contient: `{ name, meta, components }`
 
-## Troubleshooting
+## Back-compat (ancien index)
 
-- “Failed to load component database”
-  - Ensure `components-database.json` is present next to `index.html` and served with correct MIME type.
-- “No UI components found”
-  - Your `.azj` schema may differ. The parser checks `components`, `items`, `ui`, `nodes`, and `layout.components`. Update `parseAzj` if needed.
-- Misplaced elements at unusual scales
-  - Check `viewportScale` in your file. The visualizer scales the canvas using this value.
+Pour ne pas casser l’existant, `utils.js` expose toujours:
+- `scales`
+- `getNameById(id)`
+- `getCorrectedAlignment(alignment, translation)`
 
-## License
+Les nouvelles fonctions/utilitaires:
+- `loadDatabase()` charge `components-database.json`
+- `parseAzj(text)` normalise le JSON d’entrée
+- `computeViewportTransform(meta)` calcule les dimensions d’affichage
 
-MIT
+## Dépannage
+
+- Rien ne se passe quand je choisis un `.azj`:
+  - C’est probablement un binaire. Convertissez-le d'abord en JSON.
+- Erreur “Invalid JSON”:
+  - Le contenu du fichier doit être du texte JSON valide (commencer par `{` ou `[`).
+- `components-database.json` introuvable:
+  - Assurez-vous que le fichier est bien à la racine et accessible, rechargez la page (Ctrl+F5).
