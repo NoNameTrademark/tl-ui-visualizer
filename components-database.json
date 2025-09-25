@@ -47,11 +47,7 @@
     { "id": 90, "key": "dialogue", "name_en": "Dialogue", "name_ko": "대화", "name_fr": "Dialogue", "category": "Special" },
 
     { "id": 100, "key": "tooltip_enhanced", "name_en": "Enhanced Tooltip", "name_ko": "향상된 툴팁", "name_fr": "Infobulle améliorée", "category": "General" },
-
-    // Example of a component that is known to have variants:
     { "id": 106, "key": "example_with_variants", "name_en": "Example Component", "name_ko": "예시 컴포넌트", "name_fr": "Composant d'exemple", "category": "General" },
-
-    // Variants can be specified explicitly by setting "variantsOf"
     { "id": 10040, "variantsOf": 40, "key": "action_bar_1_variant", "name_en": "Action Bar 1 (Variant)", "name_ko": "액션 바 1 (변형)", "name_fr": "Barre d'action 1 (variante)", "category": "Action Bars" },
     { "id": 10106, "variantsOf": 106, "key": "example_variant", "name_en": "Example Variant", "name_ko": "예시 변형", "name_fr": "Variante d'exemple", "category": "General" }
   ]
